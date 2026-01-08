@@ -1,0 +1,9 @@
+.git
+.idea
+.vscode
+bin
+build
+*.md
+*.log
+client_bin
+server_bin
