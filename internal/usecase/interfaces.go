@@ -7,7 +7,6 @@ type Conn interface {
 	RemoteAddr() string
 	Close() error
 	Write([]byte) (int, error)
-	// State management
 	SetPlatformAuthenticated(bool)
 	IsPlatformAuthenticated() bool
 }

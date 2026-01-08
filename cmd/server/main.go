@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +12,8 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 
 	"vehicle-gateway/internal/config"
+	"vehicle-gateway/internal/infra/kafka"
+	"vehicle-gateway/internal/infra/mq"
 	"vehicle-gateway/internal/infra/rabbitmq"
 	"vehicle-gateway/internal/server"
 	"vehicle-gateway/internal/usecase"
@@ -43,21 +46,41 @@ func main() {
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
-		writeSyncer,
+		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), writeSyncer), // Add Stdout
 		zap.NewAtomicLevelAt(level),
 	)
 	logger := zap.New(core, zap.AddCaller())
 	defer logger.Sync()
 
-	// 2. 基础设施层 (RabbitMQ & TSDB)
-	producer, err := rabbitmq.NewRabbitMQProducer(cfg.RabbitMQ, logger)
-	if err != nil {
-		// With lazy connection, this error should be rare (only if config is invalid maybe)
-		logger.Error("Failed to initialize RabbitMQ producer structure", zap.Error(err))
+	// 2. 基础设施层 (MQ)
+	var producer mq.Producer
+	mqCfg := cfg.MessageQueue
+
+	if !mqCfg.Enabled {
+		logger.Info("Message Queue is disabled, using NoOpProducer")
+		producer = mq.NewNoOpProducer()
 	} else {
-		// We can use it even if not connected yet
-		defer producer.Close()
+		switch mqCfg.Type {
+		case "rabbitmq":
+			rbProducer, err := rabbitmq.NewRabbitMQProducer(mqCfg.RabbitMQ, logger)
+			if err != nil {
+				logger.Error("Failed to initialize RabbitMQ producer", zap.Error(err))
+				panic(err)
+			}
+			producer = rbProducer
+		case "kafka":
+			kProducer, err := kafka.NewKafkaProducer(mqCfg.Kafka, logger)
+			if err != nil {
+				logger.Error("Failed to initialize Kafka producer", zap.Error(err))
+				panic(err)
+			}
+			producer = kProducer
+		default:
+			logger.Warn("Unknown MQ type, using NoOpProducer", zap.String("type", mqCfg.Type))
+			producer = mq.NewNoOpProducer()
+		}
 	}
+	defer producer.Close()
 
 	// 3. 业务逻辑层 (分发器 & 处理器 & 会话管理)
 	dispatcher := usecase.NewDataDispatcher(producer, 100, logger)
@@ -73,12 +96,21 @@ func main() {
 
 	// 5. 启动服务
 	go func() {
+		fmt.Println(`
+   ______               ______      __
+  / ____/___ ______    / ____/___ _/ /____ _      ______ ___  __
+ / /   / __ '/ ___/   / / __/ __ '/ __/ _ \ | /| / / __ '/ / / /
+/ /___/ /_/ / /      / /_/ / /_/ / /_/  __/ |/ |/ / /_/ / /_/ /
+\____/\__,_/_/       \____/\__,_/\__/\___/|__/|__/\__,_/\__, /
+                                                       /____/
+Starting Car Gateway Server...
+`)
+		logger.Info("Server listening", zap.String("host", cfg.Server.Host), zap.Int("port", cfg.Server.Port))
 		if err := srv.Start(context.Background()); err != nil {
 			logger.Fatal("Server failed", zap.Error(err))
 		}
 	}()
 
-	// 优雅停机
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit

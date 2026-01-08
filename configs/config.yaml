@@ -13,11 +13,17 @@ log:
 auth:
   users:
     - username: "admin"
-      password: "123456"
+      password: "password_placeholder" # Change this in production
 
-rabbitmq:
-  url: "amqp://admin:xxx@xxxx:5672"
-  virtual_host: /dev
-  exchange: "e_car_event"
-  routing_key: "k_car.event"
-  queue_name: "q_carEvent"
+message_queue:
+  enabled: false
+  type: "rabbitmq" # Options: rabbitmq, kafka
+  rabbitmq:
+    url: "amqp://guest:guest@localhost:5672" # Change this in production
+    virtual_host: "/"
+    exchange: "e_car_event"
+    routing_key: "k_car.event"
+    queue_name: "q_carEvent"
+  kafka:
+    brokers: ["localhost:9092"]
+    topic: "car_events"

@@ -98,8 +98,6 @@ func (s *TCPServer) OnTraffic(c gnet.Conn) (action gnet.Action) {
 	if len(buf) > 0 {
 		// 追加到连接缓冲区
 		ctx.buffer = append(ctx.buffer, buf...)
-
-		// Parse Packets Loop
 		for {
 			advance, token, err := ctx.scanner.SplitFunc(ctx.buffer, false)
 			if err != nil {
@@ -124,8 +122,6 @@ func (s *TCPServer) OnTraffic(c gnet.Conn) (action gnet.Action) {
 				if err != nil {
 					s.logger.Warn("Failed to parse packet struct", zap.Error(err))
 				} else {
-					// 调用业务 Handler
-					// 包装连接
 					wrapper := &GnetConnWrapper{conn: c}
 					if err := s.handler.HandleMessage(wrapper, pkt); err != nil {
 						s.logger.Warn("Handle message failed", zap.Error(err), zap.String("vin", pkt.VIN))
@@ -137,7 +133,6 @@ func (s *TCPServer) OnTraffic(c gnet.Conn) (action gnet.Action) {
 				continue
 			}
 
-			// 需要更多数据
 			break
 		}
 	}
@@ -147,10 +142,6 @@ func (s *TCPServer) OnTraffic(c gnet.Conn) (action gnet.Action) {
 
 func (s *TCPServer) OnClose(c gnet.Conn, err error) (action gnet.Action) {
 	s.logger.Info("Connection closed", zap.String("remote", c.RemoteAddr().String()), zap.Error(err))
-	// 手动清理逻辑?
-	// SessionManager 逻辑通过 Login/Logout/Heartbeat 处理移除。
-	// 如果连接异常断开，SessionManager 最终会超时移除。
-	// 可选: 我们可以在 context 中映射 Conn -> VIN 并在此时调用 Remove(vin)。
 	return
 }
 
@@ -175,8 +166,6 @@ func (s *TCPServer) Stop(ctx context.Context) error {
 
 // parseRawPacket 将原始有效帧字节转换为 Packet 结构体
 func parseRawPacket(data []byte) (*protocol.Packet, error) {
-	// 结构: [Start 2][Cmd 1][Resp 1][VIN 17][Enc 1][Len 2][Data N][Check 1]
-	// Header Fixed Size = 24
 	if len(data) < 25 { // Header(24) + Checksum(1) = 25 Min
 		return nil, fmt.Errorf("packet too short")
 	}
@@ -186,8 +175,6 @@ func parseRawPacket(data []byte) (*protocol.Packet, error) {
 	vin := strings.TrimRight(string(data[4:21]), "\x00 ")
 	enc := data[21]
 
-	// 长度位于 22,23。
-	// 数据单元从 24 开始。结束于 len-1 (Checksum)。
 	dataUnit := data[24 : len(data)-1]
 
 	// 创建 DataUnit 副本以防万一
@@ -200,8 +187,7 @@ func parseRawPacket(data []byte) (*protocol.Packet, error) {
 	} else if data[0] == 0x24 && data[1] == 0x24 {
 		ver = protocol.Version2025
 	} else {
-		// Should have been filtered by Scanner, but for safety
-		ver = protocol.Version2016 // Default? Or error? PacketScanner ensures valid start chars.
+		ver = protocol.Version2016
 	}
 
 	return &protocol.Packet{

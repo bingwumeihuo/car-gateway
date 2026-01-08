@@ -11,7 +11,7 @@ import (
 const (
 	ServerAddr   = "127.0.0.1:32960"
 	PlatformUser = "admin"
-	PlatformPass = "123456"
+	PlatformPass = "password_placeholder"
 
 	VehicleVIN   = "VIN12345678901234"
 	VehicleICCID = "12345678901234567890"

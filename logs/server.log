@@ -1,0 +1,21 @@
+{"level":"INFO","ts":"2026-01-08T13:59:49.255+0800","caller":"server/main.go:60","msg":"Message Queue is disabled, using NoOpProducer"}
+{"level":"INFO","ts":"2026-01-08T13:59:49.256+0800","caller":"usecase/dispatcher.go:40","msg":"DataDispatcher started","workers":100}
+{"level":"INFO","ts":"2026-01-08T13:59:49.256+0800","caller":"server/main.go:108","msg":"Server listening","host":"0.0.0.0","port":32960}
+{"level":"INFO","ts":"2026-01-08T13:59:49.256+0800","caller":"server/tcp_server.go:153","msg":"Starting TCP Server","addr":"tcp://0.0.0.0:32960"}
+{"level":"DEBUG","ts":"2026-01-08T13:59:49.256+0800","caller":"logging/logger.go:198","msg":"default logging level is info"}
+{"level":"INFO","ts":"2026-01-08T13:59:49.257+0800","caller":"server/tcp_server.go:75","msg":"TCP Server is booting","address":"tcp://0.0.0.0:32960"}
+{"level":"INFO","ts":"2026-01-08T14:00:47.372+0800","caller":"server/main.go:119","msg":"Shutting down..."}
+{"level":"INFO","ts":"2026-01-08T14:00:47.372+0800","caller":"server/tcp_server.go:163","msg":"Stopping TCP Server..."}
+{"level":"INFO","ts":"2026-01-08T14:00:47.372+0800","caller":"server/tcp_server.go:149","msg":"TCP Server is shutting down"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.372+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(0) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(10) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(1) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(6) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(3) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(11) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(2) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(4) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(5) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(7) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(9) is exiting due to error: server is going to be shutdown"}
+{"level":"DEBUG","ts":"2026-01-08T14:00:47.373+0800","caller":"v2@v2.2.9/reactor_default_bsd.go:107","msg":"event-loop(8) is exiting due to error: server is going to be shutdown"}

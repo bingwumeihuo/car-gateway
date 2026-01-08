@@ -5,10 +5,17 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Log      LogConfig      `mapstructure:"log"`
-	Auth     AuthConfig     `mapstructure:"auth"`
+	Server       ServerConfig       `mapstructure:"server"`
+	Log          LogConfig          `mapstructure:"log"`
+	Auth         AuthConfig         `mapstructure:"auth"`
+	MessageQueue MessageQueueConfig `mapstructure:"message_queue"`
+}
+
+type MessageQueueConfig struct {
+	Enabled  bool           `mapstructure:"enabled"`
+	Type     string         `mapstructure:"type"`
 	RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq"`
+	Kafka    KafkaConfig    `mapstructure:"kafka"`
 }
 
 type RabbitMQConfig struct {
@@ -17,6 +24,11 @@ type RabbitMQConfig struct {
 	Exchange    string `mapstructure:"exchange"`
 	RoutingKey  string `mapstructure:"routing_key"`
 	QueueName   string `mapstructure:"queue_name"`
+}
+
+type KafkaConfig struct {
+	Brokers []string `mapstructure:"brokers"`
+	Topic   string   `mapstructure:"topic"`
 }
 
 type ServerConfig struct {

@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"vehicle-gateway/internal/config"
+	"vehicle-gateway/internal/infra/mq"
 )
 
 type RabbitMQProducer struct {
@@ -23,6 +24,9 @@ type RabbitMQProducer struct {
 	isClosed   bool
 	reconnectC chan struct{}
 }
+
+// Ensure RabbitMQProducer implements mq.Producer
+var _ mq.Producer = (*RabbitMQProducer)(nil)
 
 func NewRabbitMQProducer(cfg config.RabbitMQConfig, logger *zap.Logger) (*RabbitMQProducer, error) {
 	p := &RabbitMQProducer{

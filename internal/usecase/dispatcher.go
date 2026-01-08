@@ -2,14 +2,15 @@ package usecase
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"sync"
 
-	"go.uber.org/zap"
+	"vehicle-gateway/internal/infra/mq"
 )
 
 type DataDispatcher struct {
 	dataChan    chan interface{}
-	producer    DataProducer
+	producer    mq.Producer
 	logger      *zap.Logger
 	workerCount int
 	ctx         context.Context
@@ -18,7 +19,7 @@ type DataDispatcher struct {
 }
 
 // NewDataDispatcher 创建一个新的数据分发器
-func NewDataDispatcher(producer DataProducer, workerCount int, logger *zap.Logger) *DataDispatcher {
+func NewDataDispatcher(producer mq.Producer, workerCount int, logger *zap.Logger) *DataDispatcher {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &DataDispatcher{
 		dataChan:    make(chan interface{}, 10000), // 带缓冲 Channel，防止阻塞

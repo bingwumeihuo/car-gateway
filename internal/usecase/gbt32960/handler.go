@@ -157,9 +157,8 @@ func (h *Handler) handleVehicleLogin(conn Conn, packet *gbt32960.Packet) error {
 		zap.String("collect_time", fmt.Sprintf("%v", loginData.CollectTime)),
 		zap.String("password", loginData.Password))
 
-	// 认证校验 (Auth Disabled, always success)
+	// 认证校验
 	success := true
-	// if h.Auth != nil { ... }
 
 	// 构建响应
 	respFlag := byte(0x01)
